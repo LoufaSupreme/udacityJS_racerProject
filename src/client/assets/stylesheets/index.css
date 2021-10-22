@@ -50,6 +50,7 @@ h3 {
   color: black;
   font-weight: normal;
   font-size: 25px;
+  pointer-events: none;
 }
 
 h4 {
@@ -62,6 +63,7 @@ p {
   color: black;
   font-weight: normal;
   font-size: 18px;
+  pointer-events: none;
 }
 
 .button {
