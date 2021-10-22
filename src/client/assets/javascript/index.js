@@ -112,7 +112,7 @@ async function handleCreateRace() {
 
 	// The race has been created, now start the countdown
 	// TODO - call the async function runCountdown
-	runCountdown();
+	await runCountdown();
 
 	// TODO - call the async function startRace
 	startRace(race.ID);
@@ -243,9 +243,9 @@ function renderRacerCard(racer) {
 	return `
 		<li class="card podracer" id="${id}">
 			<h3>${customRacerName[driver_name]}</h3>
-			<p>${top_speed}</p>
-			<p>${acceleration}</p>
-			<p>${handling}</p>
+			<p>Top Speed: ${top_speed}</p>
+			<p>Acceleration: ${acceleration}</p>
+			<p>Handling: ${handling}</p>
 		</li>
 	`;
 }
@@ -340,6 +340,7 @@ function raceProgress(positions) {
 			<tr>
 				<td>
 					<h3>${count++} - ${racerName}</h3>
+					<span>Percent Complete: ${((p.segment / 201) * 100).toFixed(0)}%</span>
 				</td>
 			</tr>
 		`;
