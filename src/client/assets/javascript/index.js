@@ -1,3 +1,21 @@
+// global variables:
+const customRacerName = {
+	"Racer 1": "Big Chungus",
+	"Racer 2": "Joe Biden",
+	"Racer 3": "Hottie Thottie",
+	"Racer 4": "George",
+	"Racer 5": "6 Stray Cats",
+}
+
+const customTrackName = {
+	"Track 1": "All of India",
+	"Track 2": "Hamster Tubes",
+	"Track 3": "401 East",
+	"Track 4": "The Sewers",
+	"Track 5": "Rainbow Road",
+	"Track 6": "Rocky Road",
+}
+
 // PROVIDED CODE BELOW (LINES 1 - 80) DO NOT REMOVE
 
 // The store will hold all information needed globally
@@ -5,7 +23,7 @@ var store = {
   track_id: undefined,
   player_id: undefined,
   race_id: undefined,
-  racer: undefined,
+  race: undefined,
 };
 
 // We need our javascript to wait until the DOM is loaded
@@ -77,9 +95,6 @@ async function delay(ms) {
 // This async function controls the flow of the race, add the logic and error handling
 async function handleCreateRace() {
   try {
-	// render starting UI
-	renderAt("#race", renderRaceStartView());
-
 	// TODO - Get player_id and track_id from the store
 	const player_id = store.player_id;
 	const track_id = store.track_id;
@@ -87,6 +102,10 @@ async function handleCreateRace() {
 	// const race = TODO - invoke the API call to create the race, then save the result
 	const race = await createRace(player_id, track_id);
 	//   console.log("handleCreateRace::", race);
+	store.race = race;
+
+	// render starting UI
+	renderAt("#race", renderRaceStartView(race));
 
 	// TODO - update the store with the race id
 	store.race_id = race.ID;
@@ -173,7 +192,7 @@ function handleSelectPodRacer(target) {
   target.classList.add("selected");
 
   // TODO - save the selected racer to the store
-  store.racer = parseInt(target.id);
+  store.player_id = parseInt(target.id);
 }
 
 function handleSelectTrack(target) {
@@ -218,14 +237,6 @@ function renderRacerCars(racers) {
 }
 
 function renderRacerCard(racer) {
-
-	const customRacerName = {
-		"Racer 1": "Big Chungus",
-		"Racer 2": "Joe Biden",
-		"Racer 3": "Hottie Thottie",
-		"Racer 4": "George",
-		"Racer 5": "6 Stray Cats",
-	}
 	
 	const { id, driver_name, top_speed, acceleration, handling } = racer;
 
@@ -258,16 +269,7 @@ function renderTrackCards(tracks) {
 
 function renderTrackCard(track) {
 	
-	const customTrackName = {
-		"Track 1": "All of India",
-		"Track 2": "Hamster Tubes",
-		"Track 3": "401 East",
-		"Track 4": "The Sewers",
-		"Track 5": "Rainbow Road",
-		"Track 6": "Rocky Road",
-	}
-	
-	const { id, name } = track;
+  const { id, name } = track;
 
   return `
 		<li id="${id}" class="card track">
@@ -283,10 +285,10 @@ function renderCountdown(count) {
 	`;
 }
 
-function renderRaceStartView(track, racers) {
+function renderRaceStartView(race) {
   return `
 		<header>
-			<h1>Race: ${track}</h1>
+			<h1>Race: ${customTrackName[race.Track.name]}</h1>
 		</header>
 		<main id="two-columns">
 			<section id="leaderBoard">
@@ -318,11 +320,9 @@ function resultsView(positions) {
 }
 
 function raceProgress(positions) {
-	let userPlayer = positions.find((e) => e.id === store.race_id);
+  let userPlayer = positions.find((e) => e.id === store.player_id);
 
-  if (userPlayer) {
-  	userPlayer.driver_name += " (you)";
-  } else {
+  if (!userPlayer) {
 	  console.log('Player undefined in raceProgress Function');
   }
 
@@ -330,10 +330,16 @@ function raceProgress(positions) {
   let count = 1;
 
   const results = positions.map((p) => {
-    return `
+
+	let racerName = customRacerName[p.driver_name];
+	if (p.id === store.player_id) {
+		racerName = racerName += ' (you)';
+	}
+
+	return `
 			<tr>
 				<td>
-					<h3>${count++} - ${p.driver_name}</h3>
+					<h3>${count++} - ${racerName}</h3>
 				</td>
 			</tr>
 		`;
